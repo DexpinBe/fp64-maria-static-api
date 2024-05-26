@@ -1,44 +1,59 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
-from datastructures import FamilyStructure
-#from models import Person
+from utils import APIException
+from datastructures import User, UserManagement
 
-app = Flask(__name__)
-app.url_map.strict_slashes = False
+app = Flask(__name__, template_folder=os.path.join(os.getcwd(), "templates"))
 CORS(app)
 
-# create the jackson family object
-jackson_family = FamilyStructure("Jackson")
+user_management = UserManagement()
 
-# Handle/serialize errors like a JSON object
-@app.errorhandler(APIException)
-def handle_invalid_usage(error):
-    return jsonify(error.to_dict()), error.status_code
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('index.html')
 
-# generate sitemap with all your endpoints
-@app.route('/')
-def sitemap():
-    return generate_sitemap(app)
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    return jsonify([vars(user) for user in user_management.get_all_users()])
 
-@app.route('/members', methods=['GET'])
-def handle_hello():
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = user_management.get_user(user_id)
+    if user:
+        return jsonify(vars(user))
+    else:
+        return jsonify({"error": "User not found"}), 404
+    
+@app.route('/user', methods=['GET', 'POST'])
+def user():
+    if request.method == 'GET':
+        pass
+    elif request.method == 'POST':
+        if request.form:
+            data = request.form
+            user = User(data['id'], data['username'], data['email'], data['age'])
+            user_management.add_user(user)
+            return jsonify({"status": "success"}), 200
+        else:
+            return jsonify({"error": "Form data required"}), 400
+        
+@app.route('/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    if request.method == 'PUT':
+        data = request.form
+        success = user_management.update_user(user_id, data)
+        if success:
+            return jsonify({"status": "success"}), 200
+        else:
+            return jsonify({"error": "User not found"}), 404
 
-    # this is how you can use the Family datastructure by calling its methods
-    members = jackson_family.get_all_members()
-    response_body = {
-        "hello": "world",
-        "family": members
-    }
+@app.route('/user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    if user_management.delete_user(user_id):
+        return jsonify({"done": True}), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
 
-
-    return jsonify(response_body), 200
-
-# this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(debug=True)

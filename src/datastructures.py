@@ -8,29 +8,42 @@ update this file to implement the following already declared methods:
 """
 from random import randint
 
-class FamilyStructure:
-    def __init__(self, last_name):
-        self.last_name = last_name
+class User:
+    def __init__(self, id, username, email, age):
+        self.id = id
+        self.username = username
+        self.email = email
+        self.age = age
 
-        # example list of members
-        self._members = []
+class UserManagement:
+    def __init__(self):
+        self._users = []
 
-    # read-only: Use this method to generate random members ID's when adding members into the list
-    def _generateId(self):
-        return randint(0, 99999999)
+    def add_user(self, user):
+        self._users.append(user)
+    
+    def delete_user(self, user_id):
+        for user in self._users:
+            if user.id == user_id:
+                self._users.remove(user)
+                return True
+        return False
+    
+    def get_user(self, user_id):
+        for user in self._users:
+            if user.id == user_id:
+                return user
+        return None
+    
+    def update_user(self, user_id, new_data):
+        for user in self._users:
+            if user.id == user_id:
+                user.username = new_data.get("username", user.username)
+                user.email = new_data.get("email", user.email)
+                user.age = new_data.get("age", user.age)
+                return True
+        return False
+    
+    def get_all_users(self):
+        return self._users
 
-    def add_member(self, member):
-        # fill this method and update the return
-        pass
-
-    def delete_member(self, id):
-        # fill this method and update the return
-        pass
-
-    def get_member(self, id):
-        # fill this method and update the return
-        pass
-
-    # this method is done, it returns a list with all the family members
-    def get_all_members(self):
-        return self._members
