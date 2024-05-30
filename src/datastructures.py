@@ -9,11 +9,15 @@ update this file to implement the following already declared methods:
 from random import randint
 
 class User:
-    def __init__(self, id, username, email, age):
+    def __init__(self, id, username, email, age, password):
         self.id = id
         self.username = username
         self.email = email
         self.age = age
+        self._password = password 
+
+    def check_password(self, password):
+        return self._password == password
 
 class UserManagement:
     def __init__(self):
@@ -40,6 +44,7 @@ class UserManagement:
             if user.id == user_id:
                 user.username = new_data.get("username", user.username)
                 user.email = new_data.get("email", user.email)
+                user.password = new_data.get("password", user.password)
                 user.age = new_data.get("age", user.age)
                 return True
         return False

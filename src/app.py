@@ -15,7 +15,9 @@ def home():
 
 @app.route('/users', methods=['GET'])
 def get_all_users():
-    return jsonify([vars(user) for user in user_management.get_all_users()])
+    users = user_management.get_all_users()
+    nopass_users = [{k: v for k, v in vars(user).items() if k != '_password'} for user in users]
+    return jsonify(nopass_users)
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -32,7 +34,7 @@ def user():
     elif request.method == 'POST':
         if request.form:
             data = request.form
-            user = User(data['id'], data['username'], data['email'], data['age'])
+            user = User(data['id'], data['username'], data['email'], data['age'], data['password'])
             user_management.add_user(user)
             return jsonify({"status": "success"}), 200
         else:

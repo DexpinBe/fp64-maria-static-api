@@ -18,6 +18,9 @@
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required><br><br>
         
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required><br></br>
+        
         <label for="age">Edad:</label>
         <input type="number" id="age" name="age" required><br><br>
         
@@ -30,6 +33,7 @@
             <li>Nombre: {{ user.username }}, Correo electrónico: {{ user.email }}, Edad: {{ user.age }}</li>
         {% endfor %}
     </ul>
+    
 
     <script>
         const generateID = () => {
