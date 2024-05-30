@@ -12,10 +12,10 @@
         <div class="col-md-6">
             <h2 class="text-center">Agregar usuario</h2>
             <form method="POST" action="/user" onsubmit="generateID()">
-                <div class="form-group">
-                    <label for="id">ID:</label>
-                    <input type="text" id="id" name="id" class="form-control">
-                </div>
+              <div class="form-group">
+                <label for="id">ID:</label>
+                <input type="hidden" id="id" name="id" value="ValorGeneradoAutomaticamente">
+            </div>
                 <div class="form-group">
                     <label for="username">Usuario:</label>
                     <input type="text" id="username" name="username" class="form-control" required>
